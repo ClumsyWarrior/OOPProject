@@ -33,7 +33,7 @@ public class Horse
     //Other methods of class Horse
     public void fall()
     {
-        
+        this.hasFallen = true;
     }
     
     public double getConfidence()
