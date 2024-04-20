@@ -58,17 +58,17 @@ public class Horse
     
     public void goBackToStart()
     {
-        
+        this.distanceTravelled = 0;
     }
     
     public boolean hasFallen()
     {
-        
+        return this.hasFallen;
     }
 
     public void moveForward()
     {
-        
+        this.distanceTravelled++;
     }
 
     public void setConfidence(double newConfidence)
