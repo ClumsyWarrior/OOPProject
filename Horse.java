@@ -3,7 +3,7 @@
  * Write a description of class Horse here.
  * 
  * @author Rayyan Parkar 
- * @version (a version number or a date)
+ * @version 0.1
  */
 public class Horse
 {
