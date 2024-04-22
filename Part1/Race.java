@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.lang.Math;
 
@@ -63,8 +64,7 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace()
-    {
+    public void startRace() {
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
         
@@ -72,7 +72,10 @@ public class Race
         lane1Horse.goBackToStart();
         lane2Horse.goBackToStart();
         lane3Horse.goBackToStart();
-                      
+        
+        // Create an ArrayList to keep track of the winners
+        ArrayList<Horse> winners = new ArrayList<>();
+                    
         while (!finished)
         {
             //move each horse
@@ -83,9 +86,27 @@ public class Race
             //print the race positions
             printRace();
             
-            //if any of the three horses has won the race is finished
-            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse))
+            // Check if each horse has won
+            if (raceWonBy(lane1Horse)) winners.add(lane1Horse);
+            if (raceWonBy(lane2Horse)) winners.add(lane2Horse);
+            if (raceWonBy(lane3Horse)) winners.add(lane3Horse);
+            
+            // If any horse has won, the race is finished
+            if (!winners.isEmpty())
             {
+                // If there's more than one winner, it's a tie
+                if (winners.size() > 1)
+                {
+                    System.out.println("It's a tie between the following horses:");
+                    for (Horse winner : winners)
+                    {
+                        System.out.println(winner.getName());
+                    }
+                }
+                else
+                {
+                    System.out.println("The winner is " + winners.get(0).getName());
+                }
                 finished = true;
             }
             //if all horses have fallen
@@ -94,14 +115,13 @@ public class Race
                 System.out.println();
                 finished = true;
             }
-           
-            //wait for 100 milliseconds
             try{ 
                 TimeUnit.MILLISECONDS.sleep(200);
             }
             catch(Exception e){}
         }
     }
+
     
     /**
      * Randomly make a horse move forward or fall depending
@@ -143,7 +163,6 @@ public class Race
     {
         if (theHorse.getDistanceTravelled() == raceLength)
         {
-            System.out.println("The winner is " + theHorse.getName());
             return true;
         }
         else
