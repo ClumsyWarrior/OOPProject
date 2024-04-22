@@ -36,6 +36,7 @@ public class Race
      * @param theHorse the horse to be added to the race
      * @param laneNumber the lane that the horse will be added to
      */
+
     public void addHorse(Horse theHorse, int laneNumber)
     {
         if (laneNumber == 1)
@@ -83,14 +84,20 @@ public class Race
             printRace();
             
             //if any of the three horses has won the race is finished
-            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse) )
+            if ( raceWonBy(lane1Horse) || raceWonBy(lane2Horse) || raceWonBy(lane3Horse))
             {
+                finished = true;
+            }
+            //if all horses have fallen
+            else if ( lane1Horse.hasFallen() && lane2Horse.hasFallen() && lane3Horse.hasFallen()) {
+                System.out.println("No Winner! All horses have fallen");
+                System.out.println();
                 finished = true;
             }
            
             //wait for 100 milliseconds
             try{ 
-                TimeUnit.MILLISECONDS.sleep(100);
+                TimeUnit.MILLISECONDS.sleep(200);
             }
             catch(Exception e){}
         }
@@ -117,7 +124,7 @@ public class Race
             }
             
             //the probability that the horse will fall is very small (max is 0.1)
-            //but will also will depends exponentially on confidence 
+            //but also depends exponentially on confidence 
             //so if you double the confidence, the probability that it will fall is *2
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
@@ -136,6 +143,7 @@ public class Race
     {
         if (theHorse.getDistanceTravelled() == raceLength)
         {
+            System.out.println("The winner is " + theHorse.getName());
             return true;
         }
         else
@@ -149,7 +157,24 @@ public class Race
      */
     private void printRace()
     {
-        System.out.print('\u000C');  //clear the terminal window
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+        
+            // Windows
+            if (os.contains("win")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } 
+
+            // Unix or Linux or Mac
+            else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                new ProcessBuilder("/bin/bash", "-c", "clear").inheritIO().start().waitFor();
+            }
+
+        } 
+        
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
@@ -201,7 +226,7 @@ public class Race
         multiplePrint(' ',spacesAfter);
         
         //print the | for the end of the track
-        System.out.print('|');
+        System.out.print("| " + theHorse.getName() + " (Current confidence " +theHorse.getConfidence() + ")");
     }
         
     
