@@ -12,9 +12,7 @@ import java.lang.Math;
 public class Race
 {
     private int raceLength;
-    private Horse lane1Horse;
-    private Horse lane2Horse;
-    private Horse lane3Horse;
+    private ArrayList<Horse> horses;
 
     /**
      * Constructor for objects of class Race
@@ -26,9 +24,7 @@ public class Race
     {
         // initialise instance variables
         raceLength = distance;
-        lane1Horse = null;
-        lane2Horse = null;
-        lane3Horse = null;
+        horses = new ArrayList<Horse>();
     }
     
     /**
@@ -38,24 +34,9 @@ public class Race
      * @param laneNumber the lane that the horse will be added to
      */
 
-    public void addHorse(Horse theHorse, int laneNumber)
+    public void addHorse(Horse theHorse)
     {
-        if (laneNumber == 1)
-        {
-            lane1Horse = theHorse;
-        }
-        else if (laneNumber == 2)
-        {
-            lane2Horse = theHorse;
-        }
-        else if (laneNumber == 3)
-        {
-            lane3Horse = theHorse;
-        }
-        else
-        {
-            System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
-        }
+        horses.add(theHorse);
     }
     
     /**
@@ -64,32 +45,43 @@ public class Race
      * then repeatedly moved forward until the 
      * race is finished
      */
-    public void startRace() {
+    public void startRace()
+    {
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
         
         //reset all the lanes (all horses not fallen and back to 0). 
-        lane1Horse.goBackToStart();
-        lane2Horse.goBackToStart();
-        lane3Horse.goBackToStart();
+        for (Horse horse : horses) {
+            if (horse != null) {
+                horse.goBackToStart();
+            }
+        }
         
         // Create an ArrayList to keep track of the winners
         ArrayList<Horse> winners = new ArrayList<>();
-                    
+                      
         while (!finished)
         {
             //move each horse
-            moveHorse(lane1Horse);
-            moveHorse(lane2Horse);
-            moveHorse(lane3Horse);
-                        
+            for (Horse horse : horses) {
+                if (horse != null) {
+                    moveHorse(horse);
+                }
+            }
+                            
             //print the race positions
             printRace();
             
-            // Check if each horse has won
-            if (raceWonBy(lane1Horse)) winners.add(lane1Horse);
-            if (raceWonBy(lane2Horse)) winners.add(lane2Horse);
-            if (raceWonBy(lane3Horse)) winners.add(lane3Horse);
+            // Check if each horse has won and add them to the winners list
+            for (Horse horse : horses) {
+                if (horse != null && raceWonBy(horse)) {
+                    horse.setConfidence(horse.getConfidence() + 0.1);
+                    if (horse.getConfidence() > 1) {
+                        horse.setConfidence(1);
+                    }
+                    winners.add(horse);
+                }
+            }
             
             // If any horse has won, the race is finished
             if (!winners.isEmpty())
@@ -110,7 +102,7 @@ public class Race
                 finished = true;
             }
             //if all horses have fallen
-            else if ( lane1Horse.hasFallen() && lane2Horse.hasFallen() && lane3Horse.hasFallen()) {
+            else if (allHorsesHaveFallen()) {
                 System.out.println("No Winner! All horses have fallen");
                 System.out.println();
                 finished = true;
@@ -121,7 +113,16 @@ public class Race
             catch(Exception e){}
         }
     }
-
+    
+    private boolean allHorsesHaveFallen() {
+        for (Horse horse : horses) {
+            if (horse != null && !horse.hasFallen()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
     /**
      * Randomly make a horse move forward or fall depending
@@ -149,6 +150,11 @@ public class Race
             if (Math.random() < (0.1*theHorse.getConfidence()*theHorse.getConfidence()))
             {
                 theHorse.fall();
+                theHorse.setConfidence(theHorse.getConfidence() - 0.1);
+                if (theHorse.getConfidence() <0) {
+                    theHorse.setConfidence(0);
+                }
+
             }
         }
     }
@@ -174,8 +180,7 @@ public class Race
     /***
      * Print the race on the terminal
      */
-    private void printRace()
-    {
+    private void printRace() {
         try {
             String os = System.getProperty("os.name").toLowerCase();
         
@@ -183,12 +188,12 @@ public class Race
             if (os.contains("win")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
             } 
-
+    
             // Unix or Linux or Mac
             else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
                 new ProcessBuilder("/bin/bash", "-c", "clear").inheritIO().start().waitFor();
             }
-
+    
         } 
         
         catch (Exception e) {
@@ -198,14 +203,10 @@ public class Race
         multiplePrint('=',raceLength+3); //top edge of track
         System.out.println();
         
-        printLane(lane1Horse);
-        System.out.println();
-        
-        printLane(lane2Horse);
-        System.out.println();
-        
-        printLane(lane3Horse);
-        System.out.println();
+        for (Horse horse : horses) {
+            printLane(horse);
+            System.out.println();
+        }
         
         multiplePrint('=',raceLength+3); //bottom edge of track
         System.out.println();    
