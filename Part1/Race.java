@@ -204,8 +204,16 @@ public class Race
         System.out.println();
         
         for (Horse horse : horses) {
-            printLane(horse);
-            System.out.println();
+            if (horse != null) {
+                printLane(horse);
+                System.out.println();
+            }
+            
+            else {
+                System.out.print('|');
+                multiplePrint(' ', raceLength+1);
+                System.out.println('|');
+            }
         }
         
         multiplePrint('=',raceLength+3); //bottom edge of track
