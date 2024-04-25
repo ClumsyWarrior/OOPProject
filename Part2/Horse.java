@@ -1,4 +1,4 @@
-
+package Part2;
 /**
  * Write a description of class Horse here.
  * 
@@ -7,8 +7,6 @@
  */
 public class Horse
 {
-    //Code below:
-    
     //Attributes of class Horse
     private String horseName;
     private char horseSymbol;
