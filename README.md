@@ -1,2 +1,2 @@
 # OOPProject
-Final Project for Object Oriented Programming, a horse race simulator.
+Run the HorseRaceGUI.java file in order to run the program, then add horses and race!
