@@ -1,9 +1,6 @@
 package Part2;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.JTextArea;
-
 import java.lang.Math;
 
 /**
@@ -17,7 +14,6 @@ public class Race
 {
     private int raceLength;
     private ArrayList<Horse> horses;
-    private JTextArea raceArea;
 
     /**
      * Constructor for objects of class Race
@@ -25,13 +21,13 @@ public class Race
      * 
      * @param distance the length of the racetrack (in metres/yards...)
      */
-    public Race(int distance, JTextArea raceArea)
+    public Race(int distance)
     {
         // initialise instance variables
         raceLength = distance;
         horses = new ArrayList<Horse>();
     }
-
+    
     /**
      * Adds a horse to the race in a given lane
      * 
@@ -39,30 +35,9 @@ public class Race
      * @param laneNumber the lane that the horse will be added to
      */
 
-    public void addHorse(Horse theHorse, int laneNumber)
+    public void addHorse(Horse theHorse)
     {
-        if (laneNumber == -1 || laneNumber > horses.size()){
-            horses.add(theHorse);
-            System.out.println(horses);
-            
-        }
-        else {
-            horses.set(laneNumber - 1, theHorse); // Replace the None value with the horse object
-            System.out.println(horses);
-        }
-    }
-    
-    public void removeHorse(int laneNumber)
-    {
-        if (laneNumber == 1 && horses.size() == 1) {
-            this.horses = new ArrayList<>();
-        }
-        else if (laneNumber > 1 && laneNumber <= horses.size()) {
-            this.horses.remove(laneNumber - 1);
-        }
-        else {
-            this.horses = new ArrayList<>();
-        }
+        horses.add(theHorse);
     }
     
     /**
@@ -134,7 +109,7 @@ public class Race
                 finished = true;
             }
             try{ 
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.MILLISECONDS.sleep(200);
             }
             catch(Exception e){}
         }
@@ -202,68 +177,101 @@ public class Race
             return false;
         }
     }
-
+    
+    /***
+     * Print the race on the terminal
+     */
     private void printRace() {
-        StringBuilder raceState = new StringBuilder();
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+        
+            // Windows
+            if (os.contains("win")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } 
     
-        multiplePrint(raceState, '=', raceLength + 3); // top edge of track
-        raceState.append('\n');
+            // Unix or Linux or Mac
+            else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+                new ProcessBuilder("/bin/bash", "-c", "clear").inheritIO().start().waitFor();
+            }
     
+        } 
+        
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        multiplePrint('=',raceLength+3); //top edge of track
+        System.out.println();
+        
         for (Horse horse : horses) {
             if (horse != null) {
-                printLane(raceState, horse);
-                raceState.append('\n');
-            } else {
-                raceState.append('|');
-                multiplePrint(raceState, ' ', raceLength + 1);
-                raceState.append("|\n");
+                printLane(horse);
+                System.out.println();
+            }
+            
+            else {
+                System.out.print('|');
+                multiplePrint(' ', raceLength+1);
+                System.out.println('|');
             }
         }
-    
-        multiplePrint(raceState, '=', raceLength + 3); // bottom edge of track
-        raceState.append('\n');
-    
-        raceArea.setText(raceState.toString());
+        
+        multiplePrint('=',raceLength+3); //bottom edge of track
+        System.out.println();    
     }
     
-    private void printLane(StringBuilder sb, Horse theHorse) {
+    /**
+     * print a horse's lane during the race
+     * for example
+     * |           X                      |
+     * to show how far the horse has run
+     */
+    private void printLane(Horse theHorse)
+    {
         //calculate how many spaces are needed before
         //and after the horse
         int spacesBefore = theHorse.getDistanceTravelled();
         int spacesAfter = raceLength - theHorse.getDistanceTravelled();
-    
-        //append a | for the beginning of the lane
-        sb.append('|');
-    
-        //append the spaces before the horse
-        multiplePrint(sb, ' ', spacesBefore);
-    
-        //if the horse has fallen then append dead
-        //else append the horse's symbol
-        if(theHorse.hasFallen()) {
-            sb.append('\u2322');
-        } else {
-            sb.append(theHorse.getSymbol());
+        
+        //print a | for the beginning of the lane
+        System.out.print('|');
+        
+        //print the spaces before the horse
+        multiplePrint(' ',spacesBefore);
+        
+        //if the horse has fallen then print dead
+        //else print the horse's symbol
+        if(theHorse.hasFallen())
+        {
+            System.out.print('\u2322');
         }
-    
-        //append the spaces after the horse
-        multiplePrint(sb, ' ', spacesAfter);
-    
-        //append the | for the end of the track
-        sb.append("| " + theHorse.getName() + " (Current confidence " + theHorse.getConfidence() + ")");
+        else
+        {
+            System.out.print(theHorse.getSymbol());
+        }
+        
+        //print the spaces after the horse
+        multiplePrint(' ',spacesAfter);
+        
+        //print the | for the end of the track
+        System.out.print("| " + theHorse.getName() + " (Current confidence " +theHorse.getConfidence() + ")");
     }
+        
     
     /***
-     * append a character a given number of times.
-     * e.g. multiplePrint(sb, 'x', 5) will append: xxxxx
+     * print a character a given number of times.
+     * e.g. printmany('x',5) will print: xxxxx
      * 
-     * @param sb the StringBuilder to append to
-     * @param aChar the character to append
-     * @param times the number of times to append the character
+     * @param aChar the character to Print
      */
-    private void multiplePrint(StringBuilder sb, char aChar, int times) {
-        for (int i = 0; i < times; i++) {
-            sb.append(aChar);
+    private void multiplePrint(char aChar, int times)
+    {
+        int i = 0;
+        while (i < times)
+        {
+            System.out.print(aChar);
+            i = i + 1;
         }
     }
 }
